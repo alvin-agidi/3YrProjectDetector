@@ -22,8 +22,6 @@ from tensorflow.keras.utils import plot_model
 
 from config import *
 
-
-
 class CustomLoader(SingleLoader):
     def __init__(self, *args, **kwargs):
         super().__init__( *args, **kwargs)
@@ -47,11 +45,9 @@ class CustomDataset(Dataset):
         return [Graph(x=x, a=JOINT_MATRIX, y=y) for x, y in zip(self.features, self.labels)]
 
 def predictExercisees():
-    res = np.array([detector.predict(loader_test, steps=loader_test.steps_per_epoch)/thresholds for detector, thresholds in zip(detectors, detector_thresholds)])
-    res = np.swapaxes(res, 1, 2).T
+    res = np.array([detector.predict(loader)/thresholds for detector, thresholds in zip(detectors, detector_thresholds)])
+    # res = np.swapaxes(res, 1, 2).T
 
     classifications = np.array([[np.argmax(values) for values in timestep] for timestep in res])
 
-    _, _, _, labels_test = train_test_split(features, labels, test_size=TEST_SPLIT, random_state=5)
-    r = np.array([*zip(classifications, labels_test)])
-    print(r)
+    print(classifications)
