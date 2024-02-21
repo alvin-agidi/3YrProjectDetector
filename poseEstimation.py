@@ -30,6 +30,7 @@ rand.set_seed(SEED)
 
 poseEstimator = None
 
+
 def downloadPoseEstimator():
     serverPrefix = "https://omnomnom.vision.rwth-aachen.de/data/metrabs"
     modelZippath = tf.keras.utils.get_file(
@@ -38,6 +39,7 @@ def downloadPoseEstimator():
         cache_subdir="models",
     )
     modelPath = os.path.join(os.path.dirname(modelZippath), "metrabs_mob3l_y4t")
+    print(modelPath)
     return modelPath
 
 
@@ -113,10 +115,12 @@ path = "https://firebasestorage.googleapis.com/v0/b/yrproject-64b5e.appspot.com/
 
 
 def main():
+    print("0")
+    downloadPoseEstimator()
     print("1")
-    loadPoseEstimator()
-    print("2")
-    print(extractPoses(path))
+    # loadPoseEstimator()
+    # print("2")
+    # print(extractPoses(path))
 
 
 main()
