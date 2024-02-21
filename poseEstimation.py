@@ -28,8 +28,6 @@ np.random.seed(SEED)
 random.seed(SEED)
 rand.set_seed(SEED)
 
-poseEstimator = None
-
 
 def downloadPoseEstimator():
     serverPrefix = "https://omnomnom.vision.rwth-aachen.de/data/metrabs"
@@ -44,8 +42,7 @@ def downloadPoseEstimator():
 
 
 def loadPoseEstimator():
-    global poseEstimator
-    poseEstimator = tf.saved_model.load(METRABS_PATH)
+    return tf.saved_model.load(METRABS_PATH)
 
 
 def resize_frame(image, width=None, height=None, inter=cv2.INTER_AREA):
@@ -115,13 +112,10 @@ def extractPoses(videoPath):
 path = "https://firebasestorage.googleapis.com/v0/b/yrproject-64b5e.appspot.com/o/dhQCVLTSVZMNzDwNVDa0pumDhhm2%2Fposts%2F0.4126l9pqhdp?alt=media&token=f0d1e235-d2ce-41ca-b80e-8e683361be19"
 
 
-def main():
+def main(path):
     # print("0")
     # downloadPoseEstimator()
-    print("1")
-    loadPoseEstimator()
-    print("2")
     print(extractPoses(path))
 
 
-main()
+# main()

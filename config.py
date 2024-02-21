@@ -1,4 +1,5 @@
 import numpy as np
+from spektral.layers import GCNConv
 
 CLASS_LIST = ["barbell_biceps_curl", "deadlift", "lat_pulldown", "lateral_raise"]
 # Specify the height and width to which each video frame will be resized in our dataset.
@@ -77,3 +78,5 @@ JOINT_COUNT = len(JOINT_NAMES)
 JOINT_MATRIX = np.zeros([JOINT_COUNT, JOINT_COUNT], np.float32)
 for i, j in JOINT_EDGES:
     JOINT_MATRIX[i, j] = JOINT_MATRIX[j, i] = 1
+
+GRAPHCONV = GCNConv
