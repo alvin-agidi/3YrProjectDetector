@@ -21,6 +21,12 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import *
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import plot_model, to_categorical
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Dropout
+from keras.layers import TimeDistributed
+from keras.layers import Flatten
+
+from keras.optimizers import Adam
 
 from config import *
 
@@ -57,7 +63,43 @@ class CustomDataset(Dataset):
         ]
 
 
-def predictExercises():
+class GNN(Model):
+    def __init__(self):
+        super().__init__()
+        self.graph_conv = TimeDistributed(GRAPHCONV(64, activation="tanh"))
+        self.dropout = Dropout(0.8)
+        # self.pool = GlobalAvgPool()
+        # self.lstm = TimeDistributed(LSTM(8, activation='relu', return_sequences=True))
+        self.flatten = TimeDistributed(Flatten())
+        self.dense = TimeDistributed(Dense(1, activation="sigmoid"))
+        self.flatten1 = Flatten()
+
+    def call(self, inputs):
+        # print(K.ndim(inputs[1]))
+        out = self.graph_conv(inputs)
+        out = self.dropout(out)
+        # out = self.pool(out)
+        # out = self.lstm(out)
+        # out = self.dropout(out)
+        out = self.flatten(out)
+        out = self.dense(out)
+        out = self.flatten1(out)
+        return out
+
+
+def createLoader(features):
+    dataset = CustomDataset(features)
+    dataset.apply(LayerPreprocess(GRAPHCONV))
+    return CustomLoader(dataset)
+
+
+def loadDetectors():
+    return
+
+
+def predictExercises(poses):
+    loader = createLoader(poses)
+
     res = np.array(
         [
             detector.predict(loader) / thresholds
