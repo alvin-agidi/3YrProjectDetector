@@ -44,6 +44,7 @@ def downloadPoseEstimator():
 
 
 def loadPoseEstimator():
+    global poseEstimator
     poseEstimator = tf.saved_model.load(METRABS_PATH)
 
 
@@ -111,16 +112,16 @@ def extractPoses(videoPath):
     return videoPoses
 
 
-path = "https://firebasestorage.googleapis.com/v0/b/yrproject-64b5e.appspot.com/o/3mVQwan7W2gnlh2E23CtzlF6JW22%2Fposts%2F0.3waqvfwl8cb?alt=media&token=adee9262-2003-495d-bec6-7f4850aa2e85"
+path = "https://firebasestorage.googleapis.com/v0/b/yrproject-64b5e.appspot.com/o/dhQCVLTSVZMNzDwNVDa0pumDhhm2%2Fposts%2F0.4126l9pqhdp?alt=media&token=f0d1e235-d2ce-41ca-b80e-8e683361be19"
 
 
 def main():
-    print("0")
-    downloadPoseEstimator()
+    # print("0")
+    # downloadPoseEstimator()
     print("1")
-    # loadPoseEstimator()
-    # print("2")
-    # print(extractPoses(path))
+    loadPoseEstimator()
+    print("2")
+    print(extractPoses(path))
 
 
 main()

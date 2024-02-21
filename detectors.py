@@ -1,4 +1,5 @@
 import os
+
 # import pandas as pd
 import random
 import urllib.request
@@ -8,6 +9,7 @@ from collections import deque
 # import datetime as dt
 import numpy as np
 import tensorflow as tf
+
 # from google.colab.patches import cv2_imshow
 from sklearn.model_selection import train_test_split
 from spektral.data import BatchLoader, Dataset, Graph, SingleLoader
@@ -26,18 +28,22 @@ from config import *
 
 detectors = []
 
+
 class CustomLoader(SingleLoader):
     def __init__(self, *args, **kwargs):
-        super().__init__( *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def collate(self, batch):
         output = super().collate(batch)
         l1 = (
             np.reshape(np.array(output[0][0]), (SEQUENCE_LENGTH, JOINT_COUNT, 3)),
-            np.reshape(np.array(output[0][1]), (SEQUENCE_LENGTH, JOINT_COUNT, JOINT_COUNT))
+            np.reshape(
+                np.array(output[0][1]), (SEQUENCE_LENGTH, JOINT_COUNT, JOINT_COUNT)
+            ),
         )
         l2 = np.reshape(np.array(output[1]), (-1, SEQUENCE_LENGTH))
-        return tuple((l1,l2))
+        return tuple((l1, l2))
+
 
 class CustomDataset(Dataset):
     def __init__(self, features, labels, **kwargs):
@@ -46,12 +52,22 @@ class CustomDataset(Dataset):
         super().__init__(shuffle=False, **kwargs)
 
     def read(self):
-        return [Graph(x=x, a=JOINT_MATRIX, y=y) for x, y in zip(self.features, self.labels)]
+        return [
+            Graph(x=x, a=JOINT_MATRIX, y=y) for x, y in zip(self.features, self.labels)
+        ]
 
-def predictExercisees():
-    res = np.array([detector.predict(loader)/thresholds for detector, thresholds in zip(detectors, DETECTOR_THRESHOLDS)])
+
+def predictExercises():
+    res = np.array(
+        [
+            detector.predict(loader) / thresholds
+            for detector, thresholds in zip(detectors, DETECTOR_THRESHOLDS)
+        ]
+    )
     # res = np.swapaxes(res, 1, 2).T
 
-    classifications = np.array([[np.argmax(values) for values in timestep] for timestep in res])
+    classifications = np.array(
+        [[np.argmax(values) for values in timestep] for timestep in res]
+    )
 
     print(classifications)
