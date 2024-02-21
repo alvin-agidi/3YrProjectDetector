@@ -22,11 +22,13 @@ from tensorflow.keras.utils import plot_model, to_categorical
 
 from config import *
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 np.random.seed(SEED)
 random.seed(SEED)
 rand.set_seed(SEED)
+
+poseEstimator = None
 
 def downloadPoseEstimator():
     serverPrefix = "https://omnomnom.vision.rwth-aachen.de/data/metrabs"
@@ -40,11 +42,7 @@ def downloadPoseEstimator():
 
 
 def loadPoseEstimator():
-    return tf.saved_model.load(METRABS_PATH)
-
-
-def downloadVideo(videoURL):
-    urllib.request.urlretrieve(videoURL, "video.mp4")
+    poseEstimator = tf.saved_model.load(METRABS_PATH)
 
 
 def resize_frame(image, width=None, height=None, inter=cv2.INTER_AREA):
@@ -94,7 +92,7 @@ def extractPoses(videoPath):
             break
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         resizedFrame = resize_frame(frame, width=FRAME_HEIGHT)
-        frame_tensor = tf.convert_to_tensor(resized_frame, dtype=tf.uint8)
+        frame_tensor = tf.convert_to_tensor(resizedFrame, dtype=tf.uint8)
         print("Frame " + str(frameNum + 1) + "/" + str(SEQUENCE_LENGTH))
         # print("input shape =", tf.shape(frame_tensor))
         videoPose = poseEstimator.detect_poses(frame_tensor, skeleton=SKELETON)[
@@ -111,8 +109,14 @@ def extractPoses(videoPath):
     return videoPoses
 
 
+path = "https://firebasestorage.googleapis.com/v0/b/yrproject-64b5e.appspot.com/o/3mVQwan7W2gnlh2E23CtzlF6JW22%2Fposts%2F0.3waqvfwl8cb?alt=media&token=adee9262-2003-495d-bec6-7f4850aa2e85"
+
+
 def main():
-    downloadPoseEstimator()
+    print("1")
+    loadPoseEstimator()
+    print("2")
+    print(extractPoses(path))
 
 
 main()
