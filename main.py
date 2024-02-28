@@ -22,11 +22,12 @@ from tensorflow.keras.utils import plot_model, to_categorical
 
 from config import *
 
-# import matplotlib.pyplot as plt
-
 np.random.seed(SEED)
 random.seed(SEED)
 rand.set_seed(SEED)
+
+poseEstimator = None
+detectors = []
 
 
 def downloadPoseEstimator():
@@ -42,11 +43,11 @@ def downloadPoseEstimator():
 
 
 def loadPoseEstimator():
-    return tf.saved_model.load(METRABS_PATH)
+    global poseEstimator
+    poseEstimator = tf.saved_model.load(METRABS_PATH)
 
 
 def resize_frame(image, width=None, height=None, inter=cv2.INTER_AREA):
-    # initialize the dimensions of the image to be resized and grab the image size
     dim = None
     (h, w) = image.shape[:2]
 
@@ -109,13 +110,44 @@ def extractPoses(videoPath):
     return videoPoses
 
 
+def createLoader(poses):
+    dataset = CustomDataset(poses, np.zeros(len(poses)))
+    dataset.apply(LayerPreprocess(GRAPHCONV))
+    return CustomLoader(dataset)
+
+
+def loadDetectors():
+    global detectors
+    detectors = []
+
+
+def predictExercises(poses):
+    loader = createLoader(poses)
+
+    res = np.array(
+        [
+            detector.predict(loader) / thresholds
+            for detector, thresholds in zip(detectors, DETECTOR_THRESHOLDS)
+        ]
+    )
+
+    classifications = np.array(
+        [[np.argmax(values) for values in timestep] for timestep in res]
+    )
+
+    return classifications
+
+
 path = "https://firebasestorage.googleapis.com/v0/b/yrproject-64b5e.appspot.com/o/dhQCVLTSVZMNzDwNVDa0pumDhhm2%2Fposts%2F0.4126l9pqhdp?alt=media&token=f0d1e235-d2ce-41ca-b80e-8e683361be19"
+examplePosesPath = "/dcs/21/u2102804/modules/year3/cs310/code/detector/examplePoses.npy"
 
 
-def main(path):
-    # print("0")
-    # downloadPoseEstimator()
-    print(extractPoses(path))
+def main():
+    # loadPoseEstimator()
+    # poses = extractPoses(path)
+    poses = np.load(examplePosesPath)
+    classifications = predictExercises(poses)
+    print(classifications)
 
 
-# main()
+main()
